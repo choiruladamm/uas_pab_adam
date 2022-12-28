@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "81553261981",
+    "project_id": "uas-pab-adam",
+    "storage_bucket": "uas-pab-adam.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:81553261981:android:1cafd8dcb5b932c5f55b74",
+        "android_client_info": {
+          "package_name": "com.example.uas_pab_adam"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "81553261981-9uod8m3lq72bjb1c88c4549725hd8m5l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA3N2fOtxlN89nxsjX4Tc1oTT_zs2OKejE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "81553261981-9uod8m3lq72bjb1c88c4549725hd8m5l.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
