@@ -73,7 +73,7 @@ class _TeacherPageState extends State<TeacherPage> {
                 return Padding(
                   padding: EdgeInsets.only(left: 18, right: 18, top: 20),
                   child: Container(
-                    height: 210.0,
+                    height: 250.0,
                     decoration: BoxDecoration(
                       color: primaryColorsBackground,
                       borderRadius: const BorderRadius.all(
@@ -83,7 +83,7 @@ class _TeacherPageState extends State<TeacherPage> {
                     child: Padding(
                       padding: EdgeInsets.all(12.0),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
                             documentSnapshot['nama_mk'],
@@ -93,55 +93,117 @@ class _TeacherPageState extends State<TeacherPage> {
                               color: primaryColors,
                             ),
                           ),
-                          SizedBox(height: 10),
-                          Text(
-                            documentSnapshot['nbi'],
-                            style: TextStyle(
-                              fontSize: 14.0,
-                              color: primaryColors,
-                            ),
+                          SizedBox(height: 20),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: const [
+                                  Text(
+                                    "NIM",
+                                    style: TextStyle(
+                                      fontSize: 14.0,
+                                      color: primaryColors,
+                                    ),
+                                  ),
+                                  SizedBox(height: 10),
+                                  Text(
+                                    "Dosen",
+                                    style: TextStyle(
+                                      fontSize: 14.0,
+                                      color: primaryColors,
+                                    ),
+                                  ),
+                                  SizedBox(height: 10),
+                                  Text(
+                                    "Presensi",
+                                    style: TextStyle(
+                                      fontSize: 14.0,
+                                      color: primaryColors,
+                                    ),
+                                  ),
+                                  SizedBox(height: 10),
+                                  Text(
+                                    "Nilai EAS",
+                                    style: TextStyle(
+                                      fontSize: 14.0,
+                                      color: primaryColors,
+                                    ),
+                                  ),
+                                  SizedBox(height: 10),
+                                  Text(
+                                    "Nilai ETS",
+                                    style: TextStyle(
+                                      fontSize: 14.0,
+                                      color: primaryColors,
+                                    ),
+                                  ),
+                                  SizedBox(height: 10),
+                                  Text(
+                                    "Predikat",
+                                    style: TextStyle(
+                                      fontSize: 14.0,
+                                      color: primaryColors,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    documentSnapshot['nbi'],
+                                    style: TextStyle(
+                                      fontSize: 14.0,
+                                      color: primaryColors,
+                                    ),
+                                  ),
+                                  SizedBox(height: 10),
+                                  Text(
+                                    documentSnapshot['dosen'],
+                                    style: TextStyle(
+                                      fontSize: 14.0,
+                                      color: primaryColors,
+                                    ),
+                                  ),
+                                  SizedBox(height: 10),
+                                  Text(
+                                    documentSnapshot['presensi'].toString(),
+                                    style: TextStyle(
+                                      fontSize: 14.0,
+                                      color: primaryColors,
+                                    ),
+                                  ),
+                                  SizedBox(height: 10),
+                                  Text(
+                                    documentSnapshot['eas'].toString(),
+                                    style: TextStyle(
+                                      fontSize: 14.0,
+                                      color: primaryColors,
+                                    ),
+                                  ),
+                                  SizedBox(height: 10),
+                                  Text(
+                                    documentSnapshot['ets'].toString(),
+                                    style: TextStyle(
+                                      fontSize: 14.0,
+                                      color: primaryColors,
+                                    ),
+                                  ),
+                                  SizedBox(height: 10),
+                                  Text(
+                                    documentSnapshot['predikat'].toString(),
+                                    style: TextStyle(
+                                      fontSize: 14.0,
+                                      color: primaryColors,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
-                          SizedBox(height: 10),
-                          Text(
-                            documentSnapshot['dosen'],
-                            style: TextStyle(
-                              fontSize: 14.0,
-                              color: primaryColors,
-                            ),
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            documentSnapshot['presensi'].toString(),
-                            style: TextStyle(
-                              fontSize: 14.0,
-                              color: primaryColors,
-                            ),
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            documentSnapshot['eas'].toString(),
-                            style: TextStyle(
-                              fontSize: 14.0,
-                              color: primaryColors,
-                            ),
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            documentSnapshot['ets'].toString(),
-                            style: TextStyle(
-                              fontSize: 14.0,
-                              color: primaryColors,
-                            ),
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            documentSnapshot['predikat'].toString(),
-                            style: TextStyle(
-                              fontSize: 14.0,
-                              color: primaryColors,
-                            ),
-                          ),
-
                         ],
                       ),
                     ),

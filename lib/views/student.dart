@@ -67,6 +67,36 @@ class _StudentPageState extends State<StudentPage> {
               child: Column(
                 mainAxisSize: MainAxisSize.max,
                 children: [
+                  Row(
+                    children: [
+                      GestureDetector(
+                        onTap: () => Navigator.pop(context),
+                        child: Container(
+                          height: 40,
+                          width: 40,
+                          decoration: BoxDecoration(
+                            color: primaryColorsBackground,
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          child: Icon(
+                            Icons.arrow_back_ios_new,
+                            color: primaryColors,
+                            size: 20.0,
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 20),
+                      Text(
+                        'Update Data Student',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 30),
                   CustomFormField(
                     controller: nbiController,
                     hintName: 'Input Nbi',
