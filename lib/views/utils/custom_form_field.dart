@@ -7,13 +7,11 @@ import 'package:uas_pab_adam/views/utils/pallete.dart';
 class CustomFormField extends StatelessWidget {
   String hintName;
   TextEditingController controller;
-  TextInputType keyboardType;
-  CustomFormField({super.key, required this.controller, required this.hintName, required this.keyboardType});
+  CustomFormField({super.key, required this.controller, required this.hintName});
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      keyboardType: keyboardType,
       controller: controller,
       style: TextStyle(fontSize: 16),
       decoration: InputDecoration(

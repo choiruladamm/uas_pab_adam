@@ -5,6 +5,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:uas_pab_adam/views/utils/custom_form_field.dart';
 import 'package:uas_pab_adam/views/utils/pallete.dart';
 import 'package:uas_pab_adam/controller/logout.dart';
 
@@ -16,6 +17,7 @@ class StudentPage extends StatefulWidget {
 }
 
 class _StudentPageState extends State<StudentPage> {
+  // controller update
   TextEditingController nbiController = TextEditingController();
   TextEditingController mkController = TextEditingController();
   TextEditingController dosenController = TextEditingController();
@@ -24,14 +26,17 @@ class _StudentPageState extends State<StudentPage> {
   TextEditingController etsController = TextEditingController();
   TextEditingController predikatController = TextEditingController();
 
+  // controller create
+  TextEditingController mkCreateController = TextEditingController();
+  TextEditingController dosenCreateController = TextEditingController();
+
   final CollectionReference _mahasiswa =
       FirebaseFirestore.instance.collection('mahasiswa');
 
-  Future<void> _createOrUpdate([DocumentSnapshot? documentSnapshot]) async {
-    // ignore:
-    String action = 'Tambah Nilai';
+  Future<void> createUpdateData([DocumentSnapshot? documentSnapshot]) async {
+    String action = 'Add Data';
     if (documentSnapshot != null) {
-      action = 'Update Nilai';
+      action = 'Update Data';
       mkController.text = documentSnapshot['nama_mk'];
 
       dosenController.text = documentSnapshot['dosen'];
@@ -49,6 +54,7 @@ class _StudentPageState extends State<StudentPage> {
       double akhirpresensi = 0;
       String predikat;
 
+      // update data student
       await showModalBottomSheet(
           isScrollControlled: true,
           context: context,
@@ -57,29 +63,48 @@ class _StudentPageState extends State<StudentPage> {
             true;
             return Padding(
               padding:
-                  EdgeInsets.only(top: 30, right: 20, left: 20, bottom: 20),
+                  EdgeInsets.only(top: 50, right: 20, left: 20, bottom: 20),
               child: Column(
                 mainAxisSize: MainAxisSize.max,
                 children: [
-                  TextField(
+                  CustomFormField(
                     controller: nbiController,
-                    decoration: const InputDecoration(labelText: 'NBI'),
+                    hintName: 'Input Nbi',
                   ),
-                  TextField(
+                  SizedBox(height: 10),
+                  CustomFormField(
                     controller: mkController,
-                    decoration: const InputDecoration(labelText: 'Mata Kuliah'),
+                    hintName: 'Input Nbi',
                   ),
+                  SizedBox(height: 10),
                   TextField(
                     controller: dosenController,
-                    decoration: const InputDecoration(
-                      labelText: 'Nama Dosen',
+                    style: TextStyle(fontSize: 16),
+                    decoration: InputDecoration(
+                      hintText: 'Nama Dosen',
+                      filled: true,
+                      fillColor: primaryColorsBackground,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: EdgeInsets.only(top: 10, left: 20),
                     ),
                     onChanged: (value) => {},
                   ),
+                  SizedBox(height: 10),
                   TextField(
                     controller: presensiController,
-                    decoration: const InputDecoration(
-                      labelText: 'Presensi',
+                    style: TextStyle(fontSize: 16),
+                    decoration: InputDecoration(
+                      hintText: 'Presensi',
+                      filled: true,
+                      fillColor: primaryColorsBackground,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: EdgeInsets.only(top: 10, left: 20),
                     ),
                     onChanged: (value) {
                       presensi = double.parse(value);
@@ -90,10 +115,19 @@ class _StudentPageState extends State<StudentPage> {
                       );
                     },
                   ),
+                  SizedBox(height: 10),
                   TextField(
                     controller: etsController,
-                    decoration: const InputDecoration(
-                      labelText: 'ETS',
+                    style: TextStyle(fontSize: 16),
+                    decoration: InputDecoration(
+                      hintText: 'Input Nilai Ets',
+                      filled: true,
+                      fillColor: primaryColorsBackground,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: EdgeInsets.only(top: 10, left: 20),
                     ),
                     onChanged: (value) {
                       ets = double.parse(value);
@@ -102,10 +136,19 @@ class _StudentPageState extends State<StudentPage> {
                       });
                     },
                   ),
+                  SizedBox(height: 10),
                   TextField(
                     controller: easController,
-                    decoration: const InputDecoration(
-                      labelText: 'EAS',
+                    style: TextStyle(fontSize: 16),
+                    decoration: InputDecoration(
+                      hintText: 'Input Nilai Eas',
+                      filled: true,
+                      fillColor: primaryColorsBackground,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: EdgeInsets.only(top: 10, left: 20),
                     ),
                     onChanged: (value) {
                       eas = double.parse(value);
@@ -137,10 +180,19 @@ class _StudentPageState extends State<StudentPage> {
                       });
                     },
                   ),
+                  SizedBox(height: 10),
                   TextField(
                     controller: predikatController,
-                    decoration: const InputDecoration(
-                      labelText: 'Predikat',
+                    style: TextStyle(fontSize: 16),
+                    decoration: InputDecoration(
+                      hintText: 'Predikat',
+                      filled: true,
+                      fillColor: primaryColorsBackground,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: EdgeInsets.only(top: 10, left: 20),
                     ),
                     onChanged: (value) {
                       predikat = value;
@@ -170,12 +222,10 @@ class _StudentPageState extends State<StudentPage> {
                       });
                     },
                   ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  ElevatedButton(
-                    child: Text('Update Nilai'),
-                    onPressed: () async {
+                  const SizedBox(height: 20),
+                  InkWell(
+                    borderRadius: BorderRadius.circular(12),
+                    onTap: () async {
                       final String? nama_mk = mkController.text;
                       final String? dosen = dosenController.text;
                       final int? eas = int.tryParse(easController.text);
@@ -200,13 +250,34 @@ class _StudentPageState extends State<StudentPage> {
                         MaterialPageRoute(builder: (context) => StudentPage()),
                       );
                     },
-                  )
+                    child: Container(
+                      height: 50.0,
+                      decoration: BoxDecoration(
+                        color: primaryColors,
+                        borderRadius: const BorderRadius.all(
+                          Radius.circular(
+                            12.0,
+                          ),
+                        ),
+                      ),
+                      child: Center(
+                        child: Text(
+                          "Update Data",
+                          style: TextStyle(
+                            fontSize: 18.0,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             );
           });
     }
 
+    // create data student
     await showModalBottomSheet(
         isScrollControlled: true,
         context: context,
@@ -221,22 +292,21 @@ class _StudentPageState extends State<StudentPage> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                TextField(
+                CustomFormField(
                   controller: mkController,
-                  decoration: const InputDecoration(labelText: 'Mata Kuliah'),
+                  hintName: 'Input Mata Kuliah',
                 ),
-                TextField(
+                SizedBox(height: 15),
+                CustomFormField(
                   controller: dosenController,
-                  decoration: const InputDecoration(
-                    labelText: 'Nama Dosen',
-                  ),
+                  hintName: 'Input Nama Dosen',
                 ),
                 const SizedBox(
                   height: 20,
                 ),
-                ElevatedButton(
-                  child: const Text('Tambah Nilai'),
-                  onPressed: () async {
+                InkWell(
+                  borderRadius: BorderRadius.circular(12),
+                  onTap: () async {
                     final String? nama_mk = mkController.text;
                     final String? dosen = dosenController.text;
                     final int eas = 0;
@@ -244,6 +314,7 @@ class _StudentPageState extends State<StudentPage> {
                     final String nbi = 'nbi';
                     final int presensi = 0;
                     final String predikat = '';
+                    final DateTime timestamp = DateTime.now();
 
                     mkController.text = '';
                     dosenController.text = '';
@@ -256,11 +327,32 @@ class _StudentPageState extends State<StudentPage> {
                       "nbi": nbi,
                       "presensi": presensi,
                       "predikat": predikat,
+                      "timestamp": timestamp,
                     });
 
                     Navigator.of(context).pop();
                   },
-                )
+                  child: Container(
+                    height: 50.0,
+                    decoration: BoxDecoration(
+                      color: primaryColors,
+                      borderRadius: const BorderRadius.all(
+                        Radius.circular(
+                          12.0,
+                        ),
+                      ),
+                    ),
+                    child: Center(
+                      child: Text(
+                        "Add Data",
+                        style: TextStyle(
+                          fontSize: 18.0,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
           );
@@ -346,10 +438,10 @@ class _StudentPageState extends State<StudentPage> {
                               color: primaryColors,
                             ),
                           ),
-                          SizedBox(height: 10),
+                          SizedBox(height: 20),
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -395,7 +487,7 @@ class _StudentPageState extends State<StudentPage> {
                                   ),
                                   SizedBox(height: 10),
                                   Text(
-                                     "Predikat",
+                                    "Predikat",
                                     style: TextStyle(
                                       fontSize: 14.0,
                                       color: primaryColors,
@@ -466,7 +558,7 @@ class _StudentPageState extends State<StudentPage> {
                                 child: InkWell(
                                   borderRadius: BorderRadius.circular(12),
                                   onTap: () {
-                                    _createOrUpdate(documentSnapshot);
+                                    createUpdateData(documentSnapshot);
                                   },
                                   child: Container(
                                     height: 40.0,
@@ -534,9 +626,11 @@ class _StudentPageState extends State<StudentPage> {
           );
         },
       ),
+
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _createOrUpdate(),
-        child: const Icon(Icons.add),
+        onPressed: () => createUpdateData(),
+        backgroundColor: primaryColors,
+        child: Icon(Icons.add),
       ),
     );
   }
