@@ -279,7 +279,7 @@ class _LoginPageState extends State<LoginPage> {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => Teacher(),
+              builder: (context) => TeacherPage(),
             ),
           );
         } else if (documentSnapshot.get('rool') == "Student") {

@@ -1,521 +1,543 @@
-// ignore_for_file: prefer_const_constructors, library_private_types_in_public_api, unused_field, unused_local_variable, constant_identifier_names,no_leading_underscores_for_local_identifiers
+// ignore_for_file: prefer_const_constructors, unused_local_variable, unnecessary_nullable_for_final_variable_declarations
+// ignore_for_file: unused_label
+// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: prefer_const_declarations
 
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:uas_pab_adam/models/item_nilai_student.dart';
-import 'package:uas_pab_adam/views/login.dart';
-import 'package:uas_pab_adam/views/utils/custom_form_field.dart';
-import 'package:uas_pab_adam/views/utils/pallete.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
-const DATA_NILAI_STUDENT = 'nilai_student';
+import 'package:flutter/material.dart';
+import 'package:uas_pab_adam/views/utils/pallete.dart';
+import 'package:uas_pab_adam/controller/logout.dart';
 
 class StudentPage extends StatefulWidget {
-  const StudentPage({super.key});
+  const StudentPage({Key? key}) : super(key: key);
 
   @override
   State<StudentPage> createState() => _StudentPageState();
 }
 
 class _StudentPageState extends State<StudentPage> {
-  List<Item> nilaiStudent = [];
+  TextEditingController nbiController = TextEditingController();
+  TextEditingController mkController = TextEditingController();
+  TextEditingController dosenController = TextEditingController();
+  TextEditingController presensiController = TextEditingController();
+  TextEditingController easController = TextEditingController();
+  TextEditingController etsController = TextEditingController();
+  TextEditingController predikatController = TextEditingController();
 
-  @override
-  void initState() {
-    fetchRecord();
-    FirebaseFirestore.instance
-        .collection(DATA_NILAI_STUDENT)
-        .snapshots()
-        .listen(
-      (records) {
-        mapRecords(records);
-      },
-    );
-    super.initState();
+  final CollectionReference _mahasiswa =
+      FirebaseFirestore.instance.collection('mahasiswa');
+
+  Future<void> _createOrUpdate([DocumentSnapshot? documentSnapshot]) async {
+    // ignore:
+    String action = 'Tambah Nilai';
+    if (documentSnapshot != null) {
+      action = 'Update Nilai';
+      mkController.text = documentSnapshot['nama_mk'];
+
+      dosenController.text = documentSnapshot['dosen'];
+      nbiController.text = documentSnapshot['nbi'];
+      presensiController.text = documentSnapshot['presensi'].toString();
+      easController.text = documentSnapshot['eas'].toString();
+      etsController.text = documentSnapshot['ets'].toString();
+      predikatController.text = documentSnapshot['predikat'].toString();
+
+      double eas = 0;
+      double ets = 0;
+      double presensi;
+      double akhirets = 0;
+      double akhireas = 0;
+      double akhirpresensi = 0;
+      String predikat;
+
+      await showModalBottomSheet(
+          isScrollControlled: true,
+          context: context,
+          builder: (BuildContext ctx) {
+            SingleChildScrollView:
+            true;
+            return Padding(
+              padding:
+                  EdgeInsets.only(top: 30, right: 20, left: 20, bottom: 20),
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  TextField(
+                    controller: nbiController,
+                    decoration: const InputDecoration(labelText: 'NBI'),
+                  ),
+                  TextField(
+                    controller: mkController,
+                    decoration: const InputDecoration(labelText: 'Mata Kuliah'),
+                  ),
+                  TextField(
+                    controller: dosenController,
+                    decoration: const InputDecoration(
+                      labelText: 'Nama Dosen',
+                    ),
+                    onChanged: (value) => {},
+                  ),
+                  TextField(
+                    controller: presensiController,
+                    decoration: const InputDecoration(
+                      labelText: 'Presensi',
+                    ),
+                    onChanged: (value) {
+                      presensi = double.parse(value);
+                      setState(
+                        () {
+                          akhirpresensi = presensi / 16 * 10;
+                        },
+                      );
+                    },
+                  ),
+                  TextField(
+                    controller: etsController,
+                    decoration: const InputDecoration(
+                      labelText: 'ETS',
+                    ),
+                    onChanged: (value) {
+                      ets = double.parse(value);
+                      setState(() {
+                        akhirets = ets / 100 * 40;
+                      });
+                    },
+                  ),
+                  TextField(
+                    controller: easController,
+                    decoration: const InputDecoration(
+                      labelText: 'EAS',
+                    ),
+                    onChanged: (value) {
+                      eas = double.parse(value);
+                      setState(() {
+                        akhireas = eas / 100 * 50;
+                        double NA = akhirets + akhireas + akhirpresensi;
+
+                        if (NA <= 45) {
+                          predikatController.text = 'D';
+                        } else if (NA <= 50) {
+                          predikatController.text = 'D+';
+                        } else if (NA <= 55) {
+                          predikatController.text = 'C-';
+                        } else if (NA <= 60) {
+                          predikatController.text = 'C';
+                        } else if (NA <= 65) {
+                          predikatController.text = 'C+';
+                        } else if (NA <= 70) {
+                          predikatController.text = 'B-';
+                        } else if (NA <= 75) {
+                          predikatController.text = 'B';
+                        } else if (NA <= 80) {
+                          predikatController.text = 'B+';
+                        } else if (NA <= 85) {
+                          predikatController.text = 'A-';
+                        } else if (NA <= 100) {
+                          predikatController.text = 'A';
+                        }
+                      });
+                    },
+                  ),
+                  TextField(
+                    controller: predikatController,
+                    decoration: const InputDecoration(
+                      labelText: 'Predikat',
+                    ),
+                    onChanged: (value) {
+                      predikat = value;
+                      setState(() {
+                        double NA = akhirets + akhireas + akhirpresensi;
+                        if (NA <= 45) {
+                          predikatController.text = 'D';
+                        } else if (NA <= 50) {
+                          predikatController.text = 'D+';
+                        } else if (NA <= 55) {
+                          predikatController.text = 'C-';
+                        } else if (NA <= 60) {
+                          predikatController.text = 'C';
+                        } else if (NA <= 65) {
+                          predikatController.text = 'C+';
+                        } else if (NA <= 70) {
+                          predikatController.text = 'B-';
+                        } else if (NA <= 75) {
+                          predikatController.text = 'B';
+                        } else if (NA <= 80) {
+                          predikatController.text = 'B+';
+                        } else if (NA <= 85) {
+                          predikatController.text = 'A-';
+                        } else if (NA <= 100) {
+                          predikatController.text = 'A';
+                        }
+                      });
+                    },
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  ElevatedButton(
+                    child: Text('Update Nilai'),
+                    onPressed: () async {
+                      final String? nama_mk = mkController.text;
+                      final String? dosen = dosenController.text;
+                      final int? eas = int.tryParse(easController.text);
+                      final int? ets = int.tryParse(etsController.text);
+                      final String? predikat = predikatController.text;
+
+                      final String? nbi = nbiController.text;
+
+                      final int? presensi = int.parse(presensiController.text);
+
+                      await _mahasiswa.doc(documentSnapshot.id).update({
+                        "nama_mk": nama_mk,
+                        "dosen": dosen,
+                        "eas": eas,
+                        "ets": ets,
+                        "nbi": nbi,
+                        "presensi": presensi,
+                        "predikat": predikat,
+                      });
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => StudentPage()),
+                      );
+                    },
+                  )
+                ],
+              ),
+            );
+          });
+    }
+
+    await showModalBottomSheet(
+        isScrollControlled: true,
+        context: context,
+        builder: (BuildContext ctx) {
+          return Padding(
+            padding: EdgeInsets.only(
+                top: 20,
+                left: 20,
+                right: 20,
+                bottom: MediaQuery.of(ctx).viewInsets.bottom + 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                TextField(
+                  controller: mkController,
+                  decoration: const InputDecoration(labelText: 'Mata Kuliah'),
+                ),
+                TextField(
+                  controller: dosenController,
+                  decoration: const InputDecoration(
+                    labelText: 'Nama Dosen',
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                ElevatedButton(
+                  child: const Text('Tambah Nilai'),
+                  onPressed: () async {
+                    final String? nama_mk = mkController.text;
+                    final String? dosen = dosenController.text;
+                    final int eas = 0;
+                    final int ets = 0;
+                    final String nbi = 'nbi';
+                    final int presensi = 0;
+                    final String predikat = '';
+
+                    mkController.text = '';
+                    dosenController.text = '';
+
+                    await _mahasiswa.add({
+                      "nama_mk": nama_mk,
+                      "dosen": dosen,
+                      "eas": eas,
+                      "ets": ets,
+                      "nbi": nbi,
+                      "presensi": presensi,
+                      "predikat": predikat,
+                    });
+
+                    Navigator.of(context).pop();
+                  },
+                )
+              ],
+            ),
+          );
+        });
   }
 
-  // fetch data dari collection firebare
-  fetchRecord() async {
-    var records =
-        await FirebaseFirestore.instance.collection(DATA_NILAI_STUDENT).get();
-    mapRecords(records);
-  }
+  Future<void> _deleteProduct(String mahasiswaId) async {
+    await _mahasiswa.doc(mahasiswaId).delete();
 
-  // convert data ke list
-  mapRecords(QuerySnapshot<Map<String, dynamic>> records) {
-    var _list = records.docs
-        .map(
-          (item) => Item(
-            id: item.id,
-            nbi: item['nbi'],
-            namaMk: item['nama_mk'],
-            dosenId: item['dosen_id'],
-            presensi: item['presensi'],
-            eas: item['eas'],
-            ets: item['ets'],
-            predikat: item['predikat'],
-          ),
-        )
-        .toList();
-
-    setState(() {
-      nilaiStudent = _list;
-    });
+    ScaffoldMessenger.of(context)
+        .showSnackBar(const SnackBar(content: Text('Delete!')));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
+      backgroundColor: Colors.white,
+      // custom app bar
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.white,
+        automaticallyImplyLeading: false,
+        title: Row(
           children: [
-            
-            // custom app bar
-            Padding(
-              padding: const EdgeInsets.only(top: 50, left: 20, right: 20),
-              child: Row(
-                children: [
-                  GestureDetector(
-                    onTap: () => logout(context),
-                    child: Container(
-                      height: 40,
-                      width: 40,
-                      decoration: BoxDecoration(
-                        color: primaryColorsBackground,
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      child: Icon(
-                        Icons.logout,
-                        color: primaryColors,
-                        size: 20.0,
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 20),
-                  Text(
-                    'Student Admin',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
+            GestureDetector(
+              onTap: () => logout(context),
+              child: Container(
+                height: 40,
+                width: 40,
+                decoration: BoxDecoration(
+                  color: primaryColorsBackground,
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: Icon(
+                  Icons.logout,
+                  color: primaryColors,
+                  size: 20.0,
+                ),
               ),
             ),
+            SizedBox(width: 20),
+            Text(
+              'Student Admin',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Colors.black,
+              ),
+            ),
+          ],
+        ),
+      ),
 
-            // content
-            Padding(
-              padding: EdgeInsets.only(left: 20, right: 20, bottom: 20),
-              child: GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 1,
-                  mainAxisSpacing: 16,
-                  crossAxisSpacing: 16,
-                  mainAxisExtent: 500,
-                ),
-                itemCount: nilaiStudent.length,
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                itemBuilder: (BuildContext context, int index) {
-                  return Container(
+      body: StreamBuilder(
+        stream: _mahasiswa.snapshots(),
+        builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
+          if (streamSnapshot.hasData) {
+            return ListView.builder(
+              itemCount: streamSnapshot.data!.docs.length,
+              itemBuilder: (context, index) {
+                final DocumentSnapshot documentSnapshot =
+                    streamSnapshot.data!.docs[index];
+                return Padding(
+                  padding: EdgeInsets.only(left: 18, right: 18, top: 20),
+                  child: Container(
+                    height: 270.0,
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: primaryColorsBackground,
                       borderRadius: const BorderRadius.all(
-                        Radius.circular(20.0),
+                        Radius.circular(16.0),
                       ),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Color(0x19000000),
-                          blurRadius: 24,
-                          offset: Offset(0, 11),
-                        ),
-                      ],
                     ),
                     child: Padding(
-                      padding: EdgeInsets.all(10.0),
+                      padding: EdgeInsets.all(12.0),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            "Nbi",
+                            documentSnapshot['nama_mk'],
                             style: TextStyle(
-                              fontSize: 12.0,
                               fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(height: 5),
-                          Container(
-                            alignment: Alignment.center,
-                            height: 25,
-                            decoration: BoxDecoration(
+                              fontSize: 18,
                               color: primaryColors,
-                              borderRadius: const BorderRadius.all(
-                                Radius.circular(10.0),
-                              ),
-                            ),
-                            child: Text(
-                              nilaiStudent[index].nbi,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 13.0,
-                              ),
                             ),
                           ),
-                          SizedBox(height: 15),
-                          Text(
-                            "Mata Kuliah",
-                            style: TextStyle(
-                              fontSize: 12.0,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(height: 5),
-                          Container(
-                            alignment: Alignment.center,
-                            height: 25,
-                            decoration: BoxDecoration(
-                              color: primaryColors,
-                              borderRadius: const BorderRadius.all(
-                                Radius.circular(10.0),
-                              ),
-                            ),
-                            child: Text(
-                              nilaiStudent[index].namaMk ?? '',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 13.0,
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 15),
-                          Text(
-                            "Nama Dosen",
-                            style: TextStyle(
-                              fontSize: 12.0,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(height: 5),
-                          Container(
-                            alignment: Alignment.center,
-                            height: 25,
-                            decoration: BoxDecoration(
-                              color: primaryColors,
-                              borderRadius: const BorderRadius.all(
-                                Radius.circular(10.0),
-                              ),
-                            ),
-                            child: Text(
-                              nilaiStudent[index].dosenId ?? '',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 13.0,
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 15),
-                          Text(
-                            "Presensi",
-                            style: TextStyle(
-                              fontSize: 12.0,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(height: 5),
-                          Container(
-                            alignment: Alignment.center,
-                            height: 25,
-                            decoration: BoxDecoration(
-                              color: primaryColors,
-                              borderRadius: const BorderRadius.all(
-                                Radius.circular(10.0),
-                              ),
-                            ),
-                            child: Text(
-                              nilaiStudent[index].presensi.toString(),
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 13.0,
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 15),
-                          Text(
-                            "Eas",
-                            style: TextStyle(
-                              fontSize: 12.0,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(height: 5),
-                          Container(
-                            alignment: Alignment.center,
-                            height: 25,
-                            decoration: BoxDecoration(
-                              color: primaryColors,
-                              borderRadius: const BorderRadius.all(
-                                Radius.circular(10.0),
-                              ),
-                            ),
-                            child: Text(
-                              nilaiStudent[index].eas.toString(),
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 13.0,
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 15),
-                          Text(
-                            "Ets",
-                            style: TextStyle(
-                              fontSize: 12.0,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(height: 5),
-                          Container(
-                            alignment: Alignment.center,
-                            height: 25,
-                            decoration: BoxDecoration(
-                              color: primaryColors,
-                              borderRadius: const BorderRadius.all(
-                                Radius.circular(10.0),
-                              ),
-                            ),
-                            child: Text(
-                              nilaiStudent[index].ets.toString(),
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 13.0,
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 15),
-                          Text(
-                            "Predikat",
-                            style: TextStyle(
-                              fontSize: 12.0,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(height: 5),
-                          Container(
-                            alignment: Alignment.center,
-                            height: 25,
-                            decoration: BoxDecoration(
-                              color: primaryColors,
-                              borderRadius: const BorderRadius.all(
-                                Radius.circular(10.0),
-                              ),
-                            ),
-                            child: Text(
-                              nilaiStudent[index].predikat.toString(),
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 13.0,
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 15),
+                          SizedBox(height: 10),
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
-                              ElevatedButton(
-                                onPressed: () {
-                                  deteleItem(nilaiStudent[index].id);
-                                },
-                                style: ElevatedButton.styleFrom(
-                                    shape: CircleBorder(),
-                                    backgroundColor:
-                                        Colors.red, // <-- Button color
-                                    foregroundColor:
-                                        Colors.grey[800], // <-- Splash color
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: const [
+                                  Text(
+                                    "NIM",
+                                    style: TextStyle(
+                                      fontSize: 14.0,
+                                      color: primaryColors,
                                     ),
-                                child: Icon(Icons.delete, color: Colors.white),
+                                  ),
+                                  SizedBox(height: 10),
+                                  Text(
+                                    "Dosen",
+                                    style: TextStyle(
+                                      fontSize: 14.0,
+                                      color: primaryColors,
+                                    ),
+                                  ),
+                                  SizedBox(height: 10),
+                                  Text(
+                                    "Presensi",
+                                    style: TextStyle(
+                                      fontSize: 14.0,
+                                      color: primaryColors,
+                                    ),
+                                  ),
+                                  SizedBox(height: 10),
+                                  Text(
+                                    "Nilai EAS",
+                                    style: TextStyle(
+                                      fontSize: 14.0,
+                                      color: primaryColors,
+                                    ),
+                                  ),
+                                  SizedBox(height: 10),
+                                  Text(
+                                    "Nilai ETS",
+                                    style: TextStyle(
+                                      fontSize: 14.0,
+                                      color: primaryColors,
+                                    ),
+                                  ),
+                                  SizedBox(height: 10),
+                                  Text(
+                                     "Predikat",
+                                    style: TextStyle(
+                                      fontSize: 14.0,
+                                      color: primaryColors,
+                                    ),
+                                  ),
+                                ],
                               ),
-                              ElevatedButton(
-                                onPressed: () {
-                                  // showItemDialogUpdate();
-                                },
-                                style: ElevatedButton.styleFrom(
-                                    shape: CircleBorder(),
-                                    backgroundColor:
-                                        primaryColors, // <-- Button color
-                                    foregroundColor:
-                                        Colors.grey[800], // <-- Splash color
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    documentSnapshot['nbi'],
+                                    style: TextStyle(
+                                      fontSize: 14.0,
+                                      color: primaryColors,
                                     ),
-                                child: Icon(Icons.edit, color: Colors.white),
+                                  ),
+                                  SizedBox(height: 10),
+                                  Text(
+                                    documentSnapshot['dosen'],
+                                    style: TextStyle(
+                                      fontSize: 14.0,
+                                      color: primaryColors,
+                                    ),
+                                  ),
+                                  SizedBox(height: 10),
+                                  Text(
+                                    documentSnapshot['presensi'].toString(),
+                                    style: TextStyle(
+                                      fontSize: 14.0,
+                                      color: primaryColors,
+                                    ),
+                                  ),
+                                  SizedBox(height: 10),
+                                  Text(
+                                    documentSnapshot['eas'].toString(),
+                                    style: TextStyle(
+                                      fontSize: 14.0,
+                                      color: primaryColors,
+                                    ),
+                                  ),
+                                  SizedBox(height: 10),
+                                  Text(
+                                    documentSnapshot['ets'].toString(),
+                                    style: TextStyle(
+                                      fontSize: 14.0,
+                                      color: primaryColors,
+                                    ),
+                                  ),
+                                  SizedBox(height: 10),
+                                  Text(
+                                    documentSnapshot['predikat'].toString(),
+                                    style: TextStyle(
+                                      fontSize: 14.0,
+                                      color: primaryColors,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
-                          )
+                          ),
+
+                          // button
+                          SizedBox(height: 15),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(12),
+                                  onTap: () {
+                                    _createOrUpdate(documentSnapshot);
+                                  },
+                                  child: Container(
+                                    height: 40.0,
+                                    decoration: BoxDecoration(
+                                      color: primaryColors,
+                                      borderRadius: const BorderRadius.all(
+                                        Radius.circular(
+                                          12.0,
+                                        ),
+                                      ),
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        "Update",
+                                        style: TextStyle(
+                                          fontSize: 16.0,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(width: 10),
+                              Expanded(
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(12),
+                                  onTap: () {
+                                    _deleteProduct(documentSnapshot.id);
+                                  },
+                                  child: Container(
+                                    height: 40.0,
+                                    decoration: BoxDecoration(
+                                      color: Colors.red,
+                                      borderRadius: const BorderRadius.all(
+                                        Radius.circular(
+                                          12.0,
+                                        ),
+                                      ),
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        "Delete",
+                                        style: TextStyle(
+                                          fontSize: 16.0,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ],
                       ),
                     ),
-                  );
-                },
-              ),
-            ),
-          
-          ],
-        ),
-      ),
-      // button create data
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          showCreateItemDialog();
+                  ),
+                );
+              },
+            );
+          }
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
         },
-        backgroundColor: primaryColors,
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _createOrUpdate(),
         child: const Icon(Icons.add),
       ),
     );
   }
-
-  // method logout
-  Future<void> logout(BuildContext context) async {
-    CircularProgressIndicator();
-    await FirebaseAuth.instance.signOut();
-    // ignore: use_build_context_synchronously
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => LoginPage(),
-      ),
-    );
-  }
-
-  // show dialog create data
-  showCreateItemDialog() {
-    var nbiController = TextEditingController();
-    var matkulController = TextEditingController();
-    var dosenController = TextEditingController();
-    var presensiController = TextEditingController();
-    var easController = TextEditingController();
-    var etsController = TextEditingController();
-    var predikatController = TextEditingController();
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return Dialog(
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: EdgeInsets.all(20.0),
-              child: Column(
-                children: [
-                  CustomFormField(
-                    keyboardType: TextInputType.name,
-                    hintName: "Nbi",
-                    controller: nbiController,
-                  ),
-                  SizedBox(height: 10),
-                  CustomFormField(
-                    keyboardType: TextInputType.name,
-                    hintName: "Mata Kuliah",
-                    controller: matkulController,
-                  ),
-                  SizedBox(height: 10),
-                  CustomFormField(
-                    keyboardType: TextInputType.name,
-                    hintName: "Nama Dosen",
-                    controller: dosenController,
-                  ),
-                  SizedBox(height: 10),
-                  CustomFormField(
-                    keyboardType: TextInputType.number,
-                    hintName: "Presensi",
-                    controller: presensiController,
-                  ),
-                  SizedBox(height: 10),
-                  CustomFormField(
-                    keyboardType: TextInputType.number,
-                    hintName: "Nilai Eas",
-                    controller: easController,
-                  ),
-                  SizedBox(height: 10),
-                  CustomFormField(
-                    keyboardType: TextInputType.number,
-                    hintName: "Nilai Ets",
-                    controller: etsController,
-                  ),
-                  SizedBox(height: 10),
-                  CustomFormField(
-                    keyboardType: TextInputType.name,
-                    hintName: "Predikat",
-                    controller: predikatController,
-                  ),
-                  SizedBox(height: 30),
-                  InkWell(
-                    borderRadius: BorderRadius.circular(12),
-                    onTap: () {
-                      var nbiField = nbiController.text.trim();
-                      var matkulField = matkulController.text.trim();
-                      var dosenField = dosenController.text.trim();
-                      var presensiField = presensiController.text.trim();
-                      var easField = easController.text.trim();
-                      var etsField = etsController.text.trim();
-                      var predikatField = predikatController.text.trim();
-                      addItem(nbiField, matkulField, dosenField, presensiField,
-                          easField, etsField, predikatField);
-                      Navigator.pop(context);
-                    },
-                    child: Container(
-                      height: 50.0,
-                      decoration: BoxDecoration(
-                        color: primaryColors,
-                        borderRadius: const BorderRadius.all(
-                          Radius.circular(
-                            12.0,
-                          ),
-                        ),
-                      ),
-                      child: Center(
-                        child: Text(
-                          "Add",
-                          style: TextStyle(
-                            fontSize: 18.0,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  // create data
-  addItem(String nbi, String namaMk, String dosenId, String presensi,
-      String eas, String ets, String predikat) {
-    var item = Item(
-      id: 'id',
-      nbi: nbi,
-      namaMk: namaMk,
-      dosenId: dosenId,
-      presensi: '0',
-      eas: '0',
-      ets: '0',
-      predikat: 'E',
-    );
-    FirebaseFirestore.instance.collection(DATA_NILAI_STUDENT).add(item.toJson());
-  }
-
-  // detele data
-  deteleItem(String id){
-    FirebaseFirestore.instance.collection(DATA_NILAI_STUDENT).doc(id).delete();
-  }
-
 }

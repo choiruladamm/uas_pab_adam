@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:uas_pab_adam/views/register.dart';
 
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(MyApp());

@@ -1,69 +1,161 @@
-// ignore_for_file: prefer_const_constructors, library_private_types_in_public_api, unused_field
+// ignore_for_file: prefer_const_constructors, unused_local_variable, unnecessary_nullable_for_final_variable_declarations
+// ignore_for_file: unused_label
+// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: prefer_const_declarations
 
-
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:uas_pab_adam/views/login.dart';
 import 'package:uas_pab_adam/views/utils/pallete.dart';
+import 'package:uas_pab_adam/controller/logout.dart';
 
-class Teacher extends StatefulWidget {
-  const Teacher({super.key});
+class TeacherPage extends StatefulWidget {
+  const TeacherPage({Key? key}) : super(key: key);
 
   @override
-  State<Teacher> createState() => _TeacherState();
+  State<TeacherPage> createState() => _TeacherPageState();
 }
 
-class _TeacherState extends State<Teacher> {
+class _TeacherPageState extends State<TeacherPage> {
+
+  final CollectionReference _mahasiswa =
+      FirebaseFirestore.instance.collection('mahasiswa');
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          // custom app bar
-          Padding(
-            padding: const EdgeInsets.only(top: 50, left: 20, right: 20),
-            child: Row(
-              children: [
-                GestureDetector(
-                  onTap: () => logout(context),
+      backgroundColor: Colors.white,
+      // custom app bar
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.white,
+        automaticallyImplyLeading: false,
+        title: Row(
+          children: [
+            GestureDetector(
+              onTap: () => logout(context),
+              child: Container(
+                height: 40,
+                width: 40,
+                decoration: BoxDecoration(
+                  color: primaryColorsBackground,
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: Icon(
+                  Icons.logout,
+                  color: primaryColors,
+                  size: 20.0,
+                ),
+              ),
+            ),
+            SizedBox(width: 20),
+            Text(
+              'Teacher User',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Colors.black,
+              ),
+            ),
+          ],
+        ),
+      ),
+
+      body: StreamBuilder(
+        stream: _mahasiswa.snapshots(),
+        builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
+          if (streamSnapshot.hasData) {
+            return ListView.builder(
+              itemCount: streamSnapshot.data!.docs.length,
+              itemBuilder: (context, index) {
+                final DocumentSnapshot documentSnapshot =
+                    streamSnapshot.data!.docs[index];
+                return Padding(
+                  padding: EdgeInsets.only(left: 18, right: 18, top: 20),
                   child: Container(
-                    height: 40,
-                    width: 40,
+                    height: 210.0,
                     decoration: BoxDecoration(
                       color: primaryColorsBackground,
-                      borderRadius: BorderRadius.circular(15),
+                      borderRadius: const BorderRadius.all(
+                        Radius.circular(16.0),
+                      ),
                     ),
-                    child: Icon(
-                      Icons.logout,
-                      color: primaryColors,
-                      size: 20.0,
+                    child: Padding(
+                      padding: EdgeInsets.all(12.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            documentSnapshot['nama_mk'],
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                              color: primaryColors,
+                            ),
+                          ),
+                          SizedBox(height: 10),
+                          Text(
+                            documentSnapshot['nbi'],
+                            style: TextStyle(
+                              fontSize: 14.0,
+                              color: primaryColors,
+                            ),
+                          ),
+                          SizedBox(height: 10),
+                          Text(
+                            documentSnapshot['dosen'],
+                            style: TextStyle(
+                              fontSize: 14.0,
+                              color: primaryColors,
+                            ),
+                          ),
+                          SizedBox(height: 10),
+                          Text(
+                            documentSnapshot['presensi'].toString(),
+                            style: TextStyle(
+                              fontSize: 14.0,
+                              color: primaryColors,
+                            ),
+                          ),
+                          SizedBox(height: 10),
+                          Text(
+                            documentSnapshot['eas'].toString(),
+                            style: TextStyle(
+                              fontSize: 14.0,
+                              color: primaryColors,
+                            ),
+                          ),
+                          SizedBox(height: 10),
+                          Text(
+                            documentSnapshot['ets'].toString(),
+                            style: TextStyle(
+                              fontSize: 14.0,
+                              color: primaryColors,
+                            ),
+                          ),
+                          SizedBox(height: 10),
+                          Text(
+                            documentSnapshot['predikat'].toString(),
+                            style: TextStyle(
+                              fontSize: 14.0,
+                              color: primaryColors,
+                            ),
+                          ),
+
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                SizedBox(width: 20),
-                Text(
-                  'Teacher',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+                );
+              },
+            );
+          }
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        },
       ),
     );
   }
 
-  Future<void> logout(BuildContext context) async {
-    CircularProgressIndicator();
-    await FirebaseAuth.instance.signOut();
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => LoginPage(),
-      ),
-    );
-  }
 }
