@@ -1,13 +1,13 @@
 # Data Nilai Mahasiswa App with Firebase
 
-Tugas Kuliah Pengembanga Aplikasi Bergerak EAS
+Tugas Kuliah Pengembangan Aplikasi Bergerak EAS
 
 ## Features
 - Register
 - Login
 - Mahasiswa Page
 - Dosen Page
-- CRUD Firebase
+- CRUD using Firebase
 
 ## Screenshots Project
 <pre>
