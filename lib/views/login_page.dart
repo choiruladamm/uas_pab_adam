@@ -1,11 +1,14 @@
-// ignore_for_file: prefer_const_constructors, library_private_types_in_public_api, unused_field
+// ignore_for_file: prefer_const_constructors
+// ignore_for_file: unused_local_variable
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: unused_field
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:uas_pab_adam/views/register.dart';
-import 'package:uas_pab_adam/views/student.dart';
-import 'package:uas_pab_adam/views/teacher.dart';
+import 'package:uas_pab_adam/views/register_page.dart';
+import 'package:uas_pab_adam/views/mahasiswa_page.dart';
+import 'package:uas_pab_adam/views/dosen_page.dart';
 import 'package:uas_pab_adam/views/utils/pallete.dart';
 
 class LoginPage extends StatefulWidget {
@@ -16,6 +19,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  
   bool _isObscure3 = true;
   bool visible = false;
 
@@ -37,7 +41,8 @@ class _LoginPageState extends State<LoginPage> {
                   key: _formkey,
                   child: Column(
                     children: [
-                      // heading
+                      
+                      // heading logos
                       Padding(
                         padding: const EdgeInsets.only(top: 0),
                         child: Center(
@@ -146,7 +151,7 @@ class _LoginPageState extends State<LoginPage> {
 
                       // button login
                       Padding(
-                        padding: EdgeInsets.only(left: 20, right: 20, top: 50),
+                        padding: EdgeInsets.only(left: 20, right: 20, top: 50, bottom: 30),
                         child: InkWell(
                           borderRadius: BorderRadius.circular(12),
                           onTap: () {
@@ -180,6 +185,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
 
+                      // loading indicator
                       Visibility(
                         maintainSize: true,
                         maintainAnimation: true,
@@ -195,7 +201,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
 
-                // another login
+                // text button register
                 Padding(
                   padding: const EdgeInsets.only(top: 20),
                   child: Center(
@@ -227,38 +233,45 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
 
-                Padding(
-                  padding: const EdgeInsets.only(top: 20),
-                  child: Center(
-                    child: Text(
-                      'By creating an account, you accept Mahasiswa App',
+                // text term & condition
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(top: 20),
+                      child: Center(
+                        child: Text(
+                          'By creating an account, you accept Mahasiswa App',
+                        ),
+                      ),
                     ),
-                  ),
+                    Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          Text(
+                            'Terms of Service',
+                            style: TextStyle(
+                              color: primaryColors,
+                            ),
+                          ),
+                          SizedBox(width: 5),
+                          Text(
+                            'and',
+                          ),
+                          SizedBox(width: 5),
+                          Text(
+                            'Privacy Policy',
+                            style: TextStyle(
+                              color: primaryColors,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-                Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Text(
-                        'Terms of Service',
-                        style: TextStyle(
-                          color: primaryColors,
-                        ),
-                      ),
-                      SizedBox(width: 5),
-                      Text(
-                        'and',
-                      ),
-                      SizedBox(width: 5),
-                      Text(
-                        'Privacy Policy',
-                        style: TextStyle(
-                          color: primaryColors,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+              
               ],
             ),
           ),
@@ -267,35 +280,37 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  // methos validasi user pada firebase collection akun_app
   void route() {
     User? user = FirebaseAuth.instance.currentUser;
     var kk = FirebaseFirestore.instance
-        .collection('users')
+        .collection('akun_app')
         .doc(user!.uid)
         .get()
         .then((DocumentSnapshot documentSnapshot) {
       if (documentSnapshot.exists) {
-        if (documentSnapshot.get('rool') == "Teacher") {
+        if (documentSnapshot.get('rool') == "Dosen") {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => TeacherPage(),
+              builder: (context) => DosenPage(),
             ),
           );
-        } else if (documentSnapshot.get('rool') == "Student") {
+        } else if (documentSnapshot.get('rool') == "Mahasiswa") {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => StudentPage(),
+              builder: (context) => MahasiswaPage(),
             ),
           );
         }
       } else {
-        print('Document does not exist on the database');
+        return null;
       }
     });
   }
 
+  // validasi register bila user ada / tidak ada
   void signIn(String email, String password) async {
     if (_formkey.currentState!.validate()) {
       try {
@@ -307,11 +322,9 @@ class _LoginPageState extends State<LoginPage> {
         route();
       } on FirebaseAuthException catch (e) {
         if (e.code == 'user-not-found') {
-          print('No user found for that email.');
-        } else if (e.code == 'wrong-password') {
-          print('Wrong password provided for that user.');
-        }
+        } else if (e.code == 'wrong-password') {}
       }
     }
   }
+
 }

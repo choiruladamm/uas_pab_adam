@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:uas_pab_adam/views/login.dart';
+import 'package:uas_pab_adam/views/login_page.dart';
 import 'package:uas_pab_adam/views/utils/pallete.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -25,20 +25,17 @@ class _RegisterPageState extends State<RegisterPage> {
 
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmpassController = TextEditingController();
-  final TextEditingController name = TextEditingController();
   final TextEditingController emailController = TextEditingController();
-  final TextEditingController mobile = TextEditingController();
-  
+
   bool _isObscure = true;
   bool _isObscure2 = true;
-  File? file;
-  
+
   var options = [
-    'Student',
-    'Teacher',
+    'Mahasiswa',
+    'Dosen',
   ];
-  var _currentItemSelected = "Student";
-  var rool = "Student";
+  var _currentItemSelected = "Dosen";
+  var rool = "Dosen";
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +49,8 @@ class _RegisterPageState extends State<RegisterPage> {
                   key: _formkey,
                   child: Column(
                     children: [
-                      // heading
+                      
+                      // heading logos
                       Padding(
                         padding: const EdgeInsets.only(top: 0),
                         child: Center(
@@ -66,7 +64,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         padding: const EdgeInsets.only(top: 20),
                         child: Center(
                           child: Text(
-                            'Login to your account',
+                            'Register to your account',
                             style: TextStyle(
                               fontSize: 16,
                             ),
@@ -141,6 +139,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             hintText: 'Password',
                           ),
                           validator: (value) {
+                            // ignore: unnecessary_new
                             RegExp regex = new RegExp(r'^.{6,}$');
                             if (value!.isEmpty) {
                               return "Password cannot be empty";
@@ -242,9 +241,9 @@ class _RegisterPageState extends State<RegisterPage> {
                         ),
                       ),
 
-                      // button
+                      // button login register
                       Padding(
-                        padding: EdgeInsets.only(left: 20, right: 20, top: 40),
+                        padding: EdgeInsets.only(left: 20, right: 20, top: 40, bottom: 20),
                         child: Row(
                           children: [
                             Expanded(
@@ -323,40 +322,45 @@ class _RegisterPageState extends State<RegisterPage> {
                         ),
                       ),
 
-                      // term & condition
-                      Padding(
-                        padding: const EdgeInsets.only(top: 60),
-                        child: Center(
-                          child: Text(
-                            'By creating an account, you accept Mahasiswa App',
+                      // text term & condition
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(top: 20),
+                            child: Center(
+                              child: Text(
+                                'By creating an account, you accept Mahasiswa App',
+                              ),
+                            ),
                           ),
-                        ),
+                          Center(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: const [
+                                Text(
+                                  'Terms of Service',
+                                  style: TextStyle(
+                                    color: primaryColors,
+                                  ),
+                                ),
+                                SizedBox(width: 5),
+                                Text(
+                                  'and',
+                                ),
+                                SizedBox(width: 5),
+                                Text(
+                                  'Privacy Policy',
+                                  style: TextStyle(
+                                    color: primaryColors,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                      Center(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
-                            Text(
-                              'Terms of Service',
-                              style: TextStyle(
-                                color: primaryColors,
-                              ),
-                            ),
-                            SizedBox(width: 5),
-                            Text(
-                              'and',
-                            ),
-                            SizedBox(width: 5),
-                            Text(
-                              'Privacy Policy',
-                              style: TextStyle(
-                                color: primaryColors,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    
+
                     ],
                   ),
                 ),
@@ -368,6 +372,7 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
+  // method create user
   void signUp(String email, String password, String rool) async {
     CircularProgressIndicator();
     if (_formkey.currentState!.validate()) {
@@ -378,12 +383,15 @@ class _RegisterPageState extends State<RegisterPage> {
     }
   }
 
+  // methos validasi user pada firebase collection akun_app
   postDetailsToFirestore(String email, String rool) async {
+    // ignore: unused_local_variable
     FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
     var user = _auth.currentUser;
-    CollectionReference ref = FirebaseFirestore.instance.collection('users');
+    CollectionReference ref = FirebaseFirestore.instance.collection('akun_app');
     ref.doc(user!.uid).set({'email': emailController.text, 'rool': rool});
     Navigator.pushReplacement(
         context, MaterialPageRoute(builder: (context) => LoginPage()));
   }
+
 }
